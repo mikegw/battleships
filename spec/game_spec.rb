@@ -73,12 +73,12 @@ describe Game do
     end
 
 
-    it "tells you if you hit a ship" do
+    it "announces a hit" do
       game.move([8, 8])
       expect(game.move([3,6])).to eq(:hit)
     end
 
-    it "tells you if you sink a ship" do
+    it "announces the sinking of a ship" do
       game.add_ship([[0, 0], [0, 0]], :green)
       game.add_ship([[1, 1], [1, 4]], :green)
       expect(game.move([0, 0])).to eq(:sink)

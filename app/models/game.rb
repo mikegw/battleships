@@ -1,13 +1,12 @@
 class Game < ActiveRecord::Base
 
   def state
-    self.state ||= {
-      redboats: [],
-      greenboats: [],
-      moves: []
+    @state ||= {
+      redships: [],
+      greenships: [],
+      redmoves: [],
+      greenmoves: []
     }
   end
-  #
-  # def make_move
-  # end
+
 end

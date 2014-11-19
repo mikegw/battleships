@@ -3,9 +3,7 @@ require 'rails_helper'
 
 describe Game do
 
-  before :each do
-    game = FactoryGirl.create(:game)
-  end
+  let(:game) { FactoryGirl.create(:game) }
 
   it "starts with an empty gamestate" do
     expect(game.state).to eq({

@@ -1,0 +1,15 @@
+<h1>New Game</h1>
+
+You are player <%=current_user.id%>
+
+<form id="new_game_form" action="<%= games_url %>" method="post">
+  <%= hidden_field_tag :authenticity_token, form_authenticity_token -%>
+
+  <label for="player1-id">Player 1</label>
+  <input type="text" id="player1-id" name="game[player1_id]">
+
+  <label for="player2-id">Player 2</label>
+  <input type="text" id="player2-id" name="game[player2_id]">
+
+  <input type="submit" id="submit-button" value="Start Game">
+</form>

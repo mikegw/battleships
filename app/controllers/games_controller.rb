@@ -43,7 +43,11 @@ class GamesController < ApplicationController
       flash.now[:errors] = @game.errors.fullmessages
     end
 
-    render :show
+    if @move == :game_over
+      redirect_to games_url
+    else
+      render :show
+    end
   end
 
   def destroy

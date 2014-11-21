@@ -50,12 +50,11 @@ class Game < ActiveRecord::Base
   end
 
   def move(move_arr)
-    p state
+    move_arr = JSON.parse(move_arr)
+
     return false if state[(current_player.to_s + "moves").to_sym].include?(move_arr)
 
     state[(current_player.to_s + "moves").to_sym] << move_arr
-
-    p state[(_other_player.to_s + "ships").to_sym]
 
     state[(_other_player.to_s + "ships").to_sym].each do |ship|
       if _hits_ship(move_arr, ship)
@@ -137,32 +136,35 @@ class Game < ActiveRecord::Base
   end
 
   def parse_json_hash(json_hash)
-    h = JSON.parse(json_hash)
-    symbolize_hash(h)
+    # h = JSON.parse(json_hash)
+    # symbolize_hash(h)
+    eval(json_hash.gsub(/\"(\w+)\"\:/, ':\1=>')) #TODO eval is BAD
   end
 
-  def symbolize_hash(old_hash)
-    new_hash = {}
-
-    old_hash.each_pair do |k,v|
-      if v.class == Hash
-        new_hash[k.to_sym] = symbolize_hash(v)
-      elsif v.class == Array
-        new_arr = []
-        v.each do |el|
-          if el.class == Hash
-            new_arr << symbolize_hash(el)
-          else
-            new_arr << el
-          end
-        end
-        new_hash[k.to_sym] = new_arr
-      else
-        new_hash[k.to_sym] = v
-      end
-    end
-
-    return new_hash
-  end
+  # def symbolize_keys(obj)
+  #   new_hash = {}
+  #
+  #   if
+  #
+  #   old_hash.each_pair do |k,v|
+  #     if v.class == Hash
+  #       new_hash[k.to_sym] = symbolize_hash(v)
+  #     elsif v.class == Array
+  #       new_arr = []
+  #       v.each do |el|
+  #         if el.class == Hash
+  #           new_arr << symbolize_hash(el)
+  #         else
+  #           new_arr << el
+  #         end
+  #       end
+  #       new_hash[k.to_sym] = new_arr
+  #     else
+  #       new_hash[k.to_sym] = v
+  #     end
+  #   end
+  #
+  #   return new_hash
+  # end
 
 end

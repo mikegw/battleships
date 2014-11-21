@@ -21,10 +21,10 @@
 
   <%if current_user.id == @game.player1_id && @game.state[:redships].count > 3 ||%>
   <% current_user.id == @game.player2_id && @game.state[:greenships].count > 3 %>
-    <label for="game-move">Make a move</label>
+    <label for="game-move">Make a move by entering a coordinate of the form [x,y]</label>
     <input type="text" name="move" value="">
   <%else%>
-    <label for="add-ship">Add a ship</label>
+    <label for="add-ship">Add a ship by entering a json string of the form [[x1,y1],[x2,y2]]</label>
     <input type="text" name="add_ship" value="">
 
   <%end%>

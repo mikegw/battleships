@@ -10,7 +10,23 @@
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
 //
+
 //= require jquery
 //= require jquery_ujs
+//= require jquery.serializejson
+//= require pusher
 //= require turbolinks
+//= require underscore
+//= require backbone
+//= require battleships
+//= require_tree ../templates
+//= require_tree ./models
+//= require_tree ./collections
+//= require_tree ./views
+//= require_tree ./routers
 //= require_tree .
+
+
+$(document).ready(function() {
+  Battleships.initialize();
+});

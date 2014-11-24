@@ -4,14 +4,14 @@ Battleships.Views.UserRegistration = Backbone.View.extend({
 
   },
 
-  template: JST["user_registration/new"],
+  template: JST["user/show"],
 
   render: function () {
     content = this.template({
-      user = new Battleships.Models.UserRegistration();
+      user: this.model
     });
     this.$el.html(content);
     return this;
   }
 
-})
+});

@@ -2,13 +2,13 @@ class Api::SessionsController < ApplicationController
 
   def create
     user = User.find_by_credentials(
-      params[:email],
-      params[:password]
+      params[:user][:email],
+      params[:user][:password]
     )
 
     if user
       sign_in(user)
-      render json: @user
+      render json: user
     else
       render json: ["Invalid Email/Password combo"]
     end

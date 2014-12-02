@@ -1,0 +1,44 @@
+/*--------RESET--------*/
+
+html, body, main, header, section, footer, div, figure, ul, li, p, span, h1, input, button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  display: block;
+}
+
+body {
+  font-family: sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+
+input {
+  -webkit-appearance: none;
+  outline: none;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+}
+
+.group:after {
+  clear: both;
+  display: block;
+  content: "";
+}
+
+/*--------Formatting--------*/
+
+body {
+  background: cyan;
+}

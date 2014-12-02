@@ -9,6 +9,8 @@ Battleships.Views.UserNav = Backbone.View.extend({
     "submit #sign-up-form": "signUp"
   },
 
+  className: "forms-container group",
+
   template: JST["user/new_session"],
 
   render: function () {
@@ -19,17 +21,19 @@ Battleships.Views.UserNav = Backbone.View.extend({
     return this;
   },
 
+
   signIn: function (event) {
     console.log("signing in");
     event.preventDefault();
     var params = $(event.currentTarget).serializeJSON();
 
     $.ajax({
-      url: "/session.json",
+      url: "/api/session.json",
       type: "POST",
       data: params,
       success: function (response) {
         console.log("Signed in", response);
+        Battleships.currentUser = new Battleships.Models.User(response)
         Backbone.history.navigate("play", {trigger: true});
       },
       error: function () {
@@ -46,11 +50,12 @@ Battleships.Views.UserNav = Backbone.View.extend({
     var params = $(event.currentTarget).serializeJSON();
 
     $.ajax({
-      url: "/users.json",
+      url: "/api/users.json",
       type: "POST",
       data: params,
       success: function (response) {
         console.log("Signed Up", response);
+        Battleships.currentUser = new Battleships.Models.User(response)
         Backbone.history.navigate("play", {trigger: true});
       },
       error: function () {

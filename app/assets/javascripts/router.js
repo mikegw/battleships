@@ -10,16 +10,22 @@ Battleships.Routers.router = Backbone.Router.extend({
 
   initialize: function () {
     this.$el = $("body");
+    this.$el.addClass("group")
 
-    this.$mainEl = $("<main>");
-    this.$navEl = $("<nav>");
+    this.$navEl = $("<nav class=\"navbar\">");
+    this.$mainEl = $("<main class=\"main-panel\">");
+    this.$sideEl = $("<section class=\"side-panel\">");
 
     this.$el.html(this.$navEl);
     this.$el.append(this.$mainEl);
+    this.$el.append(this.$sideEl);
+
+    this._fetchCurrentUser();
   },
 
   landing: function () {
     this.newSession();
+    this.gameIndex();
 
     var landingView = new Battleships.Views.Landing();
     this._swapMainView(landingView);
@@ -40,13 +46,18 @@ Battleships.Routers.router = Backbone.Router.extend({
 
 
   gameIndex: function () {
+    //console.log("currentUser", Battleships.currentUser)
     if (Battleships.currentUser) {
+      console.log("Huzzah!")
       this.userShow();
     }
     var gameIndexView = new Battleships.Views.GameIndex({
 
     });
-    this._swapMainView(gameIndexView);
+    this._swapSideView(gameIndexView);
+
+    this.gameShow();
+
   },
 
   gameShow: function () {
@@ -54,7 +65,7 @@ Battleships.Routers.router = Backbone.Router.extend({
       var gameShowView = new Battleships.Views.GameShow();
       this._swapMainView(gameShowView);
     } else {
-      Backbone.history.navigate("gameIndex", {trigger: true});
+      Backbone.history.navigate("", {trigger: true});
     }
   },
 
@@ -71,6 +82,27 @@ Battleships.Routers.router = Backbone.Router.extend({
     this.mainView = newView;
 
     this.$mainEl.html(newView.render().$el);
+  },
+
+  _swapSideView: function (newView) {
+    this.sideView && this.sideView.remove();
+    this.sideView = newView;
+
+    this.$sideEl.html(newView.render().$el);
+  },
+
+  _fetchCurrentUser: function () {
+    var that = this;
+    $.ajax({
+      url: "/api/users/current",
+      success: function (response) {
+        if (response) {
+          Battleships.currentUser = new Battleships.Models.User(response)
+          that.userShow();
+        }
+      }
+
+    });
   }
 
 });

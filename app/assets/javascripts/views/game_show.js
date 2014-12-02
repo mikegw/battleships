@@ -1,14 +1,14 @@
-Battleships.Views.UserShow = Backbone.View.extend({
+Battleships.Views.GameShow = Backbone.View.extend({
 
   initialize: function () {
 
   },
 
-  template: JST["user/show"],
+  template: JST["game/show"],
 
   render: function () {
     content = this.template({
-      user: this.model
+      game: this.model
     });
     this.$el.html(content);
     return this;

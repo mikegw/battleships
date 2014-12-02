@@ -24,7 +24,9 @@ Battleships.Routers.router = Backbone.Router.extend({
   },
 
   landing: function () {
-    this.newSession();
+    if(!Battleships.currentUser) {
+      this.newSession();
+    }
     this.gameIndex();
 
     var landingView = new Battleships.Views.Landing();
@@ -99,6 +101,7 @@ Battleships.Routers.router = Backbone.Router.extend({
         if (response) {
           Battleships.currentUser = new Battleships.Models.User(response)
           that.userShow();
+          that.gameIndex();
         }
       }
 

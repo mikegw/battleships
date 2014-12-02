@@ -7,10 +7,45 @@
 
   h1 {
     width: 100%;
+    font-size: 30px;
     padding-top: 10px;
     padding-bottom: 10px;
     text-align:center;
     background: #ccc;
     border-bottom: 1px solid red;
+  }
+  .games-container {
+
+    .game-tabs {
+      border-bottom: 1px solid black;
+
+      .tab {
+        float: left;
+        border: 1px solid green;
+
+        h2 {
+          padding: 10px;
+          background: blue;
+        }
+
+
+
+      }
+
+    }
+
+    .games {
+      display: none;
+      li {
+        padding: 20px;
+        border-bottom: 1px solid black;
+      }
+    }
+
+    .active {
+      display: block;
+      background: pink;
+    }
+
   }
 }

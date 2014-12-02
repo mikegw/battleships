@@ -6,6 +6,7 @@ main {
   border: 1px solid red;
 
   h1 {
+    font-size: 30px;
     width: 100%;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -15,7 +16,7 @@ main {
   }
 
   .game-container {
-    margin: 15px;
+    margin: 25px;
     border: 1px solid red;
 
     header {
@@ -25,6 +26,12 @@ main {
       text-align:center;
       background: #ccc;
       border-bottom: 1px solid red;
+    }
+
+    .board-container {
+      width: 750px;
+      height: 565px;
+      margin: 25px;
     }
 
     footer {

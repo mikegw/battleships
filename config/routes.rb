@@ -5,9 +5,12 @@ Rails.application.routes.draw do
   resources :games, except: :edit
   get "games/:id/join", as: :join_game, to: "games#join"
 
+  resources :users
+
+  resource :session
+
   namespace :api, defaults: {format: :json} do
-    devise_scope :user do
-      resources :sessions, only: [:create, :destroy]
-    end
+    resources :sessions, only: [:create, :destroy]
+    resources :users, only: [:index, :show, :create]
   end
 end

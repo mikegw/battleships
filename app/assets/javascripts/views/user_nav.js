@@ -25,7 +25,7 @@ Battleships.Views.UserNav = Backbone.View.extend({
     var params = $(event.currentTarget).serializeJSON();
 
     $.ajax({
-      url: "/users/sign_in.json",
+      url: "/session.json",
       type: "POST",
       data: params,
       success: function (response) {
@@ -34,7 +34,7 @@ Battleships.Views.UserNav = Backbone.View.extend({
       },
       error: function () {
         console.log("Failed to sign in!");
-        $(event.currentTarget).$("#user-password").val("");
+        $("#user-password").val("");
       }
     });
   },

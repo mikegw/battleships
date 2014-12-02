@@ -1,6 +1,6 @@
 class GamesController < ApplicationController
 
-  before_filter :authenticate_user!, except: :index
+  before_filter :require_signed_in!, except: :index
 
   def show
     @game = Game.find(params[:id])

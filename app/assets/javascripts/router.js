@@ -10,16 +10,16 @@ Battleships.Routers.router = Backbone.Router.extend({
 
   initialize: function () {
     this.$el = $("body");
-    this.$el.addClass("group")
 
     this.$navEl = $("<nav class=\"navbar\">");
-    this.$mainEl = $("<main class=\"main-panel\">");
-    this.$sideEl = $("<section class=\"side-panel\">");
+    this.$mainEl = $("<main class=\"group\">");
+    this.$leftEl = $("<section class=\"left-panel\">")
+    this.$rightEl = $("<section class=\"right-panel\">");
 
     this.$el.html(this.$navEl);
     this.$el.append(this.$mainEl);
-    this.$el.append(this.$sideEl);
-
+    this.$mainEl.append(this.$leftEl);
+    this.$mainEl.append(this.$rightEl);
     this._fetchCurrentUser();
   },
 
@@ -30,7 +30,7 @@ Battleships.Routers.router = Backbone.Router.extend({
     this.gameIndex();
 
     var landingView = new Battleships.Views.Landing();
-    this._swapMainView(landingView);
+    this._swapLeftView(landingView);
   },
 
 
@@ -56,16 +56,17 @@ Battleships.Routers.router = Backbone.Router.extend({
     var gameIndexView = new Battleships.Views.GameIndex({
 
     });
-    this._swapSideView(gameIndexView);
+    this._swapRightView(gameIndexView);
 
     this.gameShow();
 
   },
 
   gameShow: function () {
+    console.log("Showing game")
     if (Battleships.currentUser) {
       var gameShowView = new Battleships.Views.GameShow();
-      this._swapMainView(gameShowView);
+      this._swapLeftView(gameShowView);
     } else {
       Backbone.history.navigate("", {trigger: true});
     }
@@ -79,18 +80,18 @@ Battleships.Routers.router = Backbone.Router.extend({
     this.$navEl.html(newView.render().$el);
   },
 
-  _swapMainView: function (newView) {
-    this.mainView && this.mainView.remove();
-    this.mainView = newView;
+  _swapLeftView: function (newView) {
+    this.leftView && this.leftView.remove();
+    this.leftView = newView;
 
-    this.$mainEl.html(newView.render().$el);
+    this.$leftEl.html(newView.render().$el);
   },
 
-  _swapSideView: function (newView) {
-    this.sideView && this.sideView.remove();
-    this.sideView = newView;
+  _swapRightView: function (newView) {
+    this.rightView && this.rightView.remove();
+    this.rightView = newView;
 
-    this.$sideEl.html(newView.render().$el);
+    this.$rightEl.html(newView.render().$el);
   },
 
   _fetchCurrentUser: function () {

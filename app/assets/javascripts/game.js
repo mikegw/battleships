@@ -63,7 +63,6 @@ Square.prototype.color = function () {
       return red;
     case "miss":
       return blue;
-    }
   }
 };
 

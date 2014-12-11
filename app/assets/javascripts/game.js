@@ -3,15 +3,28 @@ var Game = Battleships.Game = function (mainCanvas, sideCanvas) {
   this.sideCtx = sideCanvas.getContext("2d");
   this.ships = [];
   this.myBoard = [];
+  this.myMoves = [];
   this.enemyBoard = [];
   this.gameState = "add ships";
-  this.shiptypes = [5,3,1];
-  this.boardSize = 10;
+
+  this.isMyMove = false;
+  this.hitCount = 0;
 
   this.setupEmptyBoard(this.myBoard);
   this.setupEmptyBoard(this.enemyBoard);
   this.draw();
 };
+
+Game.SHIP_TYPES = [5,3,1];
+Game.SHIP_SQUARES = Game.SHIP_TYPES.reduce(function(a, b) {
+  return a + b;
+});
+Game.BOARD_SIZE = 10;
+Game.MESSAGES = {
+  "miss": "Missed!"
+  "hit": "You HIT an enemy ship!"
+  "sink": "Good shot! You SUNK an enemy ship!"
+}
 
 Game.prototype.setupEmptyBoard = function (board) {
 
@@ -121,8 +134,54 @@ Game.prototype.checkShipIsValid = function (bowCoords, sternCoords) {
   return true;
 }
 
+// A move is made as follows:
+// 1)  Player 1 clicks on a position "pos"
+//
+// 2)  The ui hears the click event and passes pos to the game
+//     by calling makeMove(pos)
+//
+// 3)  The game returns either an error or the pos to the ui
+//
+// 4)  If the game returns an error, the ui displays it to the
+//     screen
+//
+// 5)  If the game returns the pos, this is sent to Player 2
+//
+// 6)  Player 2 receives pos and passes it to Player 2's game
+//     by calling receiveMove(pos)
+//
+// 7)  Player 2's game works out the result of the move
+//
+// 8)  Player 2's game displays the move and returns the result
+//
+// 9)  Player 2's ui sends a moveResult to Player 1
+//
+// 10) Player 1's ui calls receiveMoveResult(moveResult) which
+//     displays the result of the move to Player 1
+
 Game.prototype.makeMove = function (pos) {
   // The player has clicked on a position pos
+  if (!this.isMyMove){
+
+    return {
+      error: "It isn't your move!"
+    };
+
+  } else {
+
+    for (var i = 0; i < this.myMoves.length; i++) {
+      if (this.myMoves[i].row == pos.row && this.myMoves[i].col == pos.col) {
+        return {
+          error: "You have already fired at this location!"
+        };
+      }
+    }
+
+    //TODO Display move
+    this.myMoves.push(pos);
+    return pos;
+
+  }
 
 };
 
@@ -131,8 +190,19 @@ Game.prototype.receiveMove = function (pos) {
 };
 
 
-Game.prototype.receiveMoveResult = function (result) {
+Game.prototype.receiveMoveResult = function (moveResult) {
   // The opponent has responded to a player's click
+  var pos = this.myMoves[this.myMoves.length - 1];
+
+  if (moveResult == "miss") {
+    this.enemyBoard[pos.row][pos.col].state = "miss";
+    this.enemyBoard[pos.row][pos.col].draw();
+    return {message: Game.MESSAGES["miss"]};
+  } else {
+    this.enemyBoard[pos.row][pos.col].state = "hit";
+    this.enemyBoard[pos.row][pos.col].draw();
+    return {message: Game.MESSAGES[moveResult]};
+  }
 };
 
 var Square = function (pos){

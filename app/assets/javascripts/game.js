@@ -22,16 +22,19 @@ Game.SHIP_SQUARES_COUNT = Game.SHIP_TYPES.reduce(function(a, b) {
 });
 Game.BOARD_SIZE = 10;
 Game.MESSAGES = {
-  "miss": "Missed!"
-  "hit": "You HIT an enemy ship!"
-  "sink": "Good shot! You SUNK an enemy ship!"
-}
+  "miss": "Missed!",
+  "hit": "You HIT an enemy ship!",
+  "sink": "Good shot! You SUNK an enemy ship!",
+  "invalidship": "You cannot place a ship there!"
+};
+Game.SHIPS_IMG = new Image();
+Game.SHIPS_IMG.src = "ships.png"
 
 Game.prototype.setupEmptyBoard = function (board) {
 
-  for (var r = 0; r < this.boardSize; r++) {
+  for (var r = 0; r < Game.BOARD_SIZE; r++) {
     var row = [];
-    for (var c = 0; c < this.boardSize; c++) {
+    for (var c = 0; c < Game.BOARD_SIZE; c++) {
       row.push(new Square({row: r, col: c}));
     }
     board.push(row);
@@ -41,14 +44,14 @@ Game.prototype.setupEmptyBoard = function (board) {
 Game.prototype.draw = function () {
   if (this.gameState == "in play") {
     for (var row in this.myBoard) {
-      for (var sq in row) {
-        sq.draw(this.sideCtx, 40);
+      for (var sq in this.myBoard[row]) {
+        this.myBoard[row][sq].draw(this.sideCtx, 40);
       }
     }
 
     for (var row in this.enemyBoard) {
-      for (var sq in row) {
-        sq.draw(this.mainCtx, 80);
+      for (var sq in this.enemyBoard[row]) {
+        this.enemyBoard[row][sq].draw(this.mainCtx, 80);
       }
     }
   } else {
@@ -89,51 +92,62 @@ Game.prototype.addShip = function (bowPos, sternPos) {
     var rowDif = sternCoords.row - bowCoords.row;
     var colDif = sternCoords.col - bowCoords.col;
     var game = this;
+    var shipLength;
 
     if (rowDif) {
-
-      this.ships.push({
-        bow: bowCoords,
-        stern: sternCoords,
-        health: Math.abs(rowDif)
-      });
-
-      var direction = (rowDif == Math.abs(rowDif)) ? 1 : -1;
-      var i = 0;
-
-      var loop = function () {
-        console.log("shipping", bowCoords.row + i, bowCoords.col);
-        game.myBoard[bowCoords.row + i][bowCoords.col].state = "ship";
-        game.myBoard[bowCoords.row + i][bowCoords.col].draw(game.mainCtx, 80);
-
-        i += direction;
-        if (Math.abs(i) <= Math.abs(rowDif)) {
-          setTimeout(loop, 50);
-        }
-      }
-      loop();
-
+      shipLength = rowDif + 1;
     } else {
-      this.ships.push({
-        bow: bowCoords,
-        stern: sternCoords,
-        health: Math.abs(colDif)
-      });
+      shipLength = colDif + 1;
+    }
 
-      var direction = (colDif == Math.abs(colDif)) ? 1 : -1;
+    var ship = {
+      bow: bowCoords,
+      stern: sternCoords,
+      health: Math.abs(shipLength)
+    }
+
+    var validLength = false;
+
+    for (var i = 0; i < this.shipTypes.length; i++) {
+      if(this.shipTypes[i] === ship.health) {
+        this.ships.push(ship);
+        this.shipTypes.splice(i,1);
+        validLength = true;
+        if(this.shipTypes.length === 0) {
+          this.gameState = "in play";
+        }
+        break;
+      }
+    }
+
+    if (validLength) {
+
+      var direction = (shipLength == Math.abs(shipLength)) ? 1 : -1;
       var i = 0;
 
       var loop = function () {
-        console.log("shipping", bowCoords.row, bowCoords.col + i);
-        game.myBoard[bowCoords.row][bowCoords.col + i].state = "ship";
-        game.myBoard[bowCoords.row][bowCoords.col + i].draw(game.mainCtx, 80);
+        if (rowDif) {
+          game.myBoard[bowCoords.row + i][bowCoords.col].state = "ship";
+          game.myBoard[bowCoords.row + i][bowCoords.col].draw(game.mainCtx, 80);
+        } else {
+          game.myBoard[bowCoords.row][bowCoords.col + i].state = "ship";
+          game.myBoard[bowCoords.row][bowCoords.col + i].draw(game.mainCtx, 80);
+        }
+
         i += direction;
-        if (Math.abs(i) <= Math.abs(colDif)) {
+        if (Math.abs(i) < Math.abs(shipLength)) {
           setTimeout(loop, 50);
+        } else {
+          game.draw();
         }
       }
       loop();
+    } else {
+      return Game.MESSAGES["invalidship"];
     }
+
+  } else {
+    return Game.MESSAGES["invalidship"];
   }
 };
 
@@ -207,24 +221,29 @@ Game.prototype.makeMove = function (pos) {
 
 Game.prototype.receiveMove = function (pos) {
   // The opponent has clicked on position pos
+  this.isMyMove = true;
 
-  for (shipIdx in this.myShips) {
-    var ship = this.myShips[shipIdx];
+  for (shipIdx in this.ships) {
+    console.log(this.ships, shipIdx, this.ships[shipIdx]);
+    var ship = this.ships[shipIdx];
 
-    var minRow = Math.min(ship.bowCoords.row, ship.sternCoords.row);
-    var maxRow = Math.max(ship.bowCoords.row, ship.sternCoords.row);
+    var minRow = Math.min(ship.bow.row, ship.stern.row);
+    var maxRow = Math.max(ship.bow.row, ship.stern.row);
 
-    var minCol = Math.min(ship.bowCoords.col, ship.sternCoords.col);
-    var maxCol = Math.max(ship.bowCoords.col, ship.sternCoords.col);
+    var minCol = Math.min(ship.bow.col, ship.stern.col);
+    var maxCol = Math.max(ship.bow.col, ship.stern.col);
 
     var shipHit = (
       pos.row >= minRow && pos.row <= maxRow &&
       pos.col >= minCol && pos.col <= maxCol
     );
 
+    console.log(shipHit);
+
     if (shipHit) {
 
       this.myBoard[pos.row][pos.col].state = "hit";
+      this.myBoard[pos.row][pos.col].draw(this.sideCtx, 40);
       this.hitCount += 1;
 
       if (this.hitCount === Game.SHIP_SQUARES_COUNT) {
@@ -242,6 +261,7 @@ Game.prototype.receiveMove = function (pos) {
     }
   }
   this.myBoard[pos.row][pos.col].state = "miss";
+  this.myBoard[pos.row][pos.col].draw(this.sideCtx, 40);
   return "miss";
 };
 
@@ -256,7 +276,8 @@ Game.prototype.receiveMoveResult = function (moveResult) {
     this.enemyBoard[pos.row][pos.col].state = "hit";
   }
 
-  this.enemyBoard[pos.row][pos.col].draw();
+  this.enemyBoard[pos.row][pos.col].draw(this.mainCtx, 80);
+  this.isMyMove = false;
   return {message: Game.MESSAGES[moveResult]};
 };
 

@@ -29,6 +29,8 @@ Game.MESSAGES = {
 };
 Game.SHIPS_IMG = new Image();
 Game.SHIPS_IMG.src = "ships.png"
+Game.BKGD_IMG = new Image();
+Game.BKGD_IMG.src = "Sea_Texture_2_by_goldberry2000.jpg"
 
 Game.prototype.setupEmptyBoard = function (board) {
 
@@ -42,7 +44,9 @@ Game.prototype.setupEmptyBoard = function (board) {
 }
 
 Game.prototype.draw = function () {
+  this.mainCtx.drawImage(Game.BKGD_IMG, 0, 0)
   if (this.gameState == "in play") {
+    this.sideCtx.drawImage(Game.BKGD_IMG, 0, 0)
     for (var row in this.myBoard) {
       for (var sq in this.myBoard[row]) {
         this.myBoard[row][sq].draw(this.sideCtx, 40);

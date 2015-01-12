@@ -1,0 +1,183 @@
+/*--------RESET--------*/
+/* line 4, /home/mike/battleships/app/assets/stylesheets/app_style.css.scss */
+html, body, main, header, section, footer, div, figure, ul, li, p, span, h1, h2, input, button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  display: block;
+}
+
+/* line 14, /home/mike/battleships/app/assets/stylesheets/app_style.css.scss */
+body {
+  font-family: sans-serif;
+}
+
+/* line 18, /home/mike/battleships/app/assets/stylesheets/app_style.css.scss */
+a {
+  text-decoration: none;
+}
+
+/* line 22, /home/mike/battleships/app/assets/stylesheets/app_style.css.scss */
+ul {
+  list-style: none;
+}
+
+/* line 26, /home/mike/battleships/app/assets/stylesheets/app_style.css.scss */
+input {
+  -webkit-appearance: none;
+  outline: none;
+}
+
+/* line 31, /home/mike/battleships/app/assets/stylesheets/app_style.css.scss */
+input:focus, textarea:focus {
+  outline: none;
+}
+
+/* line 35, /home/mike/battleships/app/assets/stylesheets/app_style.css.scss */
+.group:after {
+  clear: both;
+  display: block;
+  content: "";
+}
+
+/*--------Formatting--------*/
+/* line 43, /home/mike/battleships/app/assets/stylesheets/app_style.css.scss */
+body {
+  background: cyan;
+}
+/* line 1, /home/mike/battleships/app/assets/stylesheets/main_style.css.scss */
+main {
+  position: absolute;
+  width: 1210px;
+  max-width: 100%;
+  top: 50px;
+  left: 50%;
+  margin-left: -600px;
+  background: pink;
+}
+/* line 1, /home/mike/battleships/app/assets/stylesheets/nav_style.css.scss */
+nav {
+  width: 100%;
+  height: 50px;
+  background: yellow;
+}
+/* line 6, /home/mike/battleships/app/assets/stylesheets/nav_style.css.scss */
+nav .form-container {
+  float: right;
+  border: 1px solid purple;
+}
+/* line 10, /home/mike/battleships/app/assets/stylesheets/nav_style.css.scss */
+nav .form-container .nav-form {
+  height: 28px;
+  padding: 10px;
+}
+/* line 14, /home/mike/battleships/app/assets/stylesheets/nav_style.css.scss */
+nav .form-container .nav-form * {
+  float: left;
+  margin: 0 5px;
+  padding: 5px 10px;
+}
+/* line 20, /home/mike/battleships/app/assets/stylesheets/nav_style.css.scss */
+nav .form-container .nav-form input {
+  background: white;
+}
+/* line 24, /home/mike/battleships/app/assets/stylesheets/nav_style.css.scss */
+nav .form-container .nav-form button {
+  background: lightblue;
+}
+/* line 1, /home/mike/battleships/app/assets/stylesheets/panel_style.css.scss */
+.left-panel, .right-panel {
+  float: left;
+  height: 100%;
+}
+/* line 5, /home/mike/battleships/app/assets/stylesheets/panel_style.css.scss */
+.left-panel h1, .right-panel h1 {
+  width: 100%;
+  font-size: 30px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
+  background: #ccc;
+  border-bottom: 1px solid red;
+}
+/* line 16, /home/mike/battleships/app/assets/stylesheets/panel_style.css.scss */
+.left-panel .games-container .game-tabs, .right-panel .games-container .game-tabs {
+  border-bottom: 1px solid black;
+  cursor: pointer;
+}
+/* line 20, /home/mike/battleships/app/assets/stylesheets/panel_style.css.scss */
+.left-panel .games-container .game-tabs .tab, .right-panel .games-container .game-tabs .tab {
+  float: left;
+  border: 1px solid green;
+}
+/* line 24, /home/mike/battleships/app/assets/stylesheets/panel_style.css.scss */
+.left-panel .games-container .game-tabs .tab h2, .right-panel .games-container .game-tabs .tab h2 {
+  padding: 10px;
+  background: blue;
+}
+/* line 29, /home/mike/battleships/app/assets/stylesheets/panel_style.css.scss */
+.left-panel .games-container .game-tabs .tab.active h2, .right-panel .games-container .game-tabs .tab.active h2 {
+  background: green;
+}
+/* line 37, /home/mike/battleships/app/assets/stylesheets/panel_style.css.scss */
+.left-panel .games-container .games, .right-panel .games-container .games {
+  display: none;
+}
+/* line 39, /home/mike/battleships/app/assets/stylesheets/panel_style.css.scss */
+.left-panel .games-container .games li, .right-panel .games-container .games li {
+  padding: 20px;
+  border-bottom: 1px solid black;
+}
+/* line 45, /home/mike/battleships/app/assets/stylesheets/panel_style.css.scss */
+.left-panel .games-container .active, .right-panel .games-container .active {
+  display: block;
+  background: pink;
+}
+
+/* line 53, /home/mike/battleships/app/assets/stylesheets/panel_style.css.scss */
+.left-panel {
+  width: 800px;
+  margin-right: 10px;
+}
+/* line 57, /home/mike/battleships/app/assets/stylesheets/panel_style.css.scss */
+.left-panel .game-container header, .left-panel .game-container footer {
+  width: 100%;
+  font-size: 20px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  text-align: center;
+  background: #eee;
+  border-bottom: 1px solid green;
+}
+/* line 67, /home/mike/battleships/app/assets/stylesheets/panel_style.css.scss */
+.left-panel .game-container .board-container {
+  width: 100%;
+  height: 800px;
+}
+
+/* line 75, /home/mike/battleships/app/assets/stylesheets/panel_style.css.scss */
+.right-panel {
+  width: 400px;
+}
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any styles
+ * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
+ * file per style scope.
+ *
+
+
+
+
+
+ */
+

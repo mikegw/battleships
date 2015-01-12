@@ -20,6 +20,8 @@
 //= require backbone
 //= require battleships
 //= require eventBus
+//= require game
+//= require router
 //= require_tree ../templates
 //= require_tree ./models
 //= require_tree ./views

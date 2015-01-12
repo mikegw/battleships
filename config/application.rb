@@ -31,7 +31,7 @@ module Battleships
      g.fixture_replacement :factory_girl, :dir => "spec/factories"
     end
 
-    config.assets.initialize_on_precompile = false
+    config.assets.initialize_on_precompile = true
 
   end
 end

@@ -1,4 +1,4 @@
-class GamesController < ApplicationController
+class Api::GamesController < ApplicationController
 
   # before_filter :authenticate_user!, except: [:index]
 
@@ -8,43 +8,57 @@ class GamesController < ApplicationController
   end
 
   def index
-    @full_games = Game.where("player1_id IS NOT NULL AND player2_id IS NOT NULL")
-    @open_games = Game.where.not("player1_id IS NOT NULL AND player2_id IS NOT NULL")
+    @full_games = Game.includes(:player1)
+      .where("player1_id IS NOT NULL AND player2_id IS NOT NULL")
+      .map do |game|
+        {id: game.id, str: "#{game.player1.username}'s game"}
+      end
+    @open_games = Game.includes(:player1)
+      .where.not("player1_id IS NOT NULL AND player2_id IS NOT NULL")
+      .map do |game|
+        {id: game.id, str: "#{game.player1.username}'s game"}
+      end
+
+    puts("\n\nOpen Games:")
+    puts @open_games
     render :index
   end
 
   def create
+    p params
     @game = Game.new({player1_id: current_user.id})
     @game.game_state = @game.state.to_json
     if @game.save
-      render :index
+      Pusher.trigger("battleships", "open", {
+        id: @game.id,
+        str: "#{@game.player1.username}'s game"
+      })
+      render json: @game.id
     else
-      flash.now[:errors] = @game.errors.fullmessages
-      render :index
+      render json: {errors: @game.errors.fullmessages, status: 422}
     end
   end
 
   def update
     @game = Game.find(params[:id])
-    color = current_user.id == @game.player1_id ? :red : :green
+    p params
 
-    if params[:move]
-      @move = @game.move(params[:move])
-    elsif params[:add_ship]
-      @game.add_ship(params[:add_ship], color)
-    elsif params[:join]
-      @game.player2_id = current_user.id
-    end
-
-    unless @game.save
-      puts "DANG"
-      flash.now[:errors] = @game.errors.fullmessages
-    end
-
-    if @move == :game_over
-      render :index
+    if params[:event] == "save"
+      #TODO change the state of the game!!
+      if @game.save
+        puts "saved!"
+        render json: "saved"
+      else
+        puts "failed to save!"
+        render json: {errors: @game.errors.fullmessages, status: 422}
+      end
     else
-      render json: @game
+      channel = 'battleships' + params[:id].to_s
+      Pusher.trigger(channel, params[:event], params[:event_data], {
+        socket_id: params[:socket_id]
+      })
+      puts "message passed to opponent"
+      render json: {sent: params[:event_data]}
     end
   end
 
@@ -57,13 +71,30 @@ class GamesController < ApplicationController
       flash[:errors] = @game.errors.fullmessages
       render :index
     else
+      puts current_user
       @game.player2_id = current_user.id
       if @game.save
-        render json: @game
+        puts "triggering 'full' on channel 'battleships'"
+        Pusher.trigger("battleships", "full", {
+          id: @game.id,
+          str: "#{@game.player1.username}'s game"
+        })
+
+        channel = 'battleships' + params[:id].to_s
+        puts "triggering 'opponent join' on channel '#{channel}''"
+        Pusher.trigger(channel, "opponent join", @game.player2.username, {
+          socket_id: params[:socket_id]
+        })
+
+        puts "deciding who goes first"
+        to_move = rand(2) == 1 ? @game.player1 : @game.player2
+        Pusher.trigger(channel, "to move", to_move.username, {
+          socket_id: params[:socket_id]
+        })
+
+        render json: {id: @game.id, toMove: to_move.username}
       else
-        puts "DANG"
-        flash.now[:errors] = @game.errors.fullmessages
-        render :index
+        render json: {errors: @game.errors.fullmessages, status: 422}
       end
     end
   end

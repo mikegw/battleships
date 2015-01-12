@@ -16,5 +16,7 @@ Rails.application.routes.draw do
         get "current"
       end
     end
+    resources :games
+    get "games/:id/join", as: :join_game, to: "games#join"
   end
 end

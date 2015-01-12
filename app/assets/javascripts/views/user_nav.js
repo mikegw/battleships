@@ -33,8 +33,8 @@ Battleships.Views.UserNav = Backbone.View.extend({
       data: params,
       success: function (response) {
         console.log("Signed in", response);
-        Battleships.currentUser = new Battleships.Models.User(response)
-        Backbone.history.navigate("play", {trigger: true});
+        Battleships.currentUser = new Battleships.Models.User(response);
+        Backbone.history.navigate("signIn", {trigger: true});
       },
       error: function () {
         console.log("Failed to sign in!");
@@ -56,7 +56,7 @@ Battleships.Views.UserNav = Backbone.View.extend({
       success: function (response) {
         console.log("Signed Up", response);
         Battleships.currentUser = new Battleships.Models.User(response)
-        Backbone.history.navigate("play", {trigger: true});
+        Backbone.history.navigate("signIn", {trigger: true});
       },
       error: function () {
         console.log("Failed to create!");

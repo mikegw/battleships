@@ -14,17 +14,15 @@
   </ul>
 
   <ul class="open games active" id="open-games">
-    <li>Game 1 is CRAAAYYYZEEEEY</li>
-    <li>Game 2</li>
-    <li>Game 3</li>
-    <li>Game 4</li>
+    <% openGames.forEach (function(game) { %>
+      <li data-id="<%= game.id %>"><%= game.str %></li>
+    <% }) %>
   </ul>
 
   <ul class="full games" id="full-games">
-    <li>Game 1 (full)</li>
-    <li>Game 2 (full)</li>
-    <li>Game 3 (full)</li>
-    <li>Game 4 (full)</li>
+    <% fullGames.forEach (function(game) { %>
+      <li data-id="<%= game.id %>"><%= game.str %></li>
+    <% }) %>
   </ul>
 
 </section>

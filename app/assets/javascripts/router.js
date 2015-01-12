@@ -2,10 +2,9 @@ Battleships.Routers.router = Backbone.Router.extend({
 
   routes: {
     '': 'landing',
-    'play': 'gameIndex',
-    'new_session': 'newSession',
-    'signup': 'registerUser'
-
+    'signIn': 'userShow',
+    'play': 'gameShow',
+    'newSession': 'newSession'
   },
 
   initialize: function () {
@@ -20,7 +19,11 @@ Battleships.Routers.router = Backbone.Router.extend({
     this.$el.append(this.$mainEl);
     this.$mainEl.append(this.$leftEl);
     this.$mainEl.append(this.$rightEl);
+    console.log(1);
     this._fetchCurrentUser();
+    console.log(2);
+    this.gameIndex();
+    console.log(3);
   },
 
   landing: function () {
@@ -40,6 +43,7 @@ Battleships.Routers.router = Backbone.Router.extend({
   },
 
   userShow: function () {
+    console.log("Current User:", Battleships.currentUser.get("username"));
     var showUserView = new Battleships.Views.UserShow({
       model: Battleships.currentUser
     });
@@ -53,17 +57,12 @@ Battleships.Routers.router = Backbone.Router.extend({
       console.log("Huzzah!")
       this.userShow();
     }
-    var gameIndexView = new Battleships.Views.GameIndex({
-
-    });
+    var gameIndexView = new Battleships.Views.GameIndex();
     this._swapRightView(gameIndexView);
-
-    this.gameShow();
-
   },
 
   gameShow: function () {
-    console.log("Showing game")
+    console.log("Showing game");
     if (Battleships.currentUser) {
       var gameShowView = new Battleships.Views.GameShow();
       this._swapLeftView(gameShowView);
@@ -102,7 +101,6 @@ Battleships.Routers.router = Backbone.Router.extend({
         if (response) {
           Battleships.currentUser = new Battleships.Models.User(response)
           that.userShow();
-          that.gameIndex();
         }
       }
 

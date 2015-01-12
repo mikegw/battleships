@@ -1,13 +1,22 @@
+// Could create a game model but prefer to treat game as a plugin
+// and send ajax requests to trigger updates. Since each
+// player only has partial information, all that a game model would
+// store is the game's id, in which case creating a model seems
+// like overkill.
+
 var Game = Battleships.Game = function (mainCanvas, sideCanvas) {
-  this.mainCtx = mainCanvas.getContext("2d");
-  this.sideCtx = sideCanvas.getContext("2d");
+  this.mainCtx = function () {
+    return mainCanvas().getContext("2d");
+  };
+  this.sideCtx = function () {
+    return sideCanvas().getContext("2d");
+  };
   this.ships = [];
   this.shipTypes = Game.SHIP_TYPES;
   this.myBoard = [];
   this.myMoves = [];
   this.enemyBoard = [];
   this.gameState = "add ships";
-
   this.isMyMove = false;
   this.hitCount = 0;
 
@@ -27,10 +36,10 @@ Game.MESSAGES = {
   "sink": "Good shot! You SUNK an enemy ship!",
   "invalidship": "You cannot place a ship there!"
 };
-Game.SHIPS_IMG = new Image();
-Game.SHIPS_IMG.src = "ships.png"
-Game.BKGD_IMG = new Image();
-Game.BKGD_IMG.src = "Sea_Texture_2_by_goldberry2000.jpg"
+// Game.SHIPS_IMG = new Image();
+// Game.SHIPS_IMG.src = "ships.png"
+// Game.BKGD_IMG = new Image();
+// Game.BKGD_IMG.src = "Sea_Texture_2_by_goldberry2000.jpg"
 
 Game.prototype.setupEmptyBoard = function (board) {
 
@@ -44,9 +53,10 @@ Game.prototype.setupEmptyBoard = function (board) {
 }
 
 Game.prototype.draw = function () {
-  this.mainCtx.drawImage(Game.BKGD_IMG, 0, 0)
+//  this.mainCtx.drawImage(Game.BKGD_IMG, 0, 0)
   if (this.gameState == "in play") {
-    this.sideCtx.drawImage(Game.BKGD_IMG, 0, 0)
+    console.log("drawing in play");
+//    this.sideCtx.drawImage(Game.BKGD_IMG, 0, 0)
     for (var row in this.myBoard) {
       for (var sq in this.myBoard[row]) {
         this.myBoard[row][sq].draw(this.sideCtx, 40);
@@ -59,6 +69,7 @@ Game.prototype.draw = function () {
       }
     }
   } else {
+    console.log("drawing");
     for (var row in this.myBoard) {
       for (var sq in this.myBoard[row]) {
         this.myBoard[row][sq].draw(this.mainCtx, 80);
@@ -118,7 +129,11 @@ Game.prototype.addShip = function (bowPos, sternPos) {
         this.shipTypes.splice(i,1);
         validLength = true;
         if(this.shipTypes.length === 0) {
-          this.gameState = "in play";
+          if(this.opponentReady) {
+            this.gameState = "in play";
+          } else {
+            this.gameState = "ready";
+          }
         }
         break;
       }
@@ -146,12 +161,17 @@ Game.prototype.addShip = function (bowPos, sternPos) {
         }
       }
       loop();
+      if (game.gameState === "ready" || game.gameState === "in play") {
+        return "ready";
+      } else {
+        return "ok"; // TODO better name for this
+      }
     } else {
-      return Game.MESSAGES["invalidship"];
+      return {error: Game.MESSAGES["invalidship"]};
     }
 
   } else {
-    return Game.MESSAGES["invalidship"];
+    return {error: Game.MESSAGES["invalidship"]};
   }
 };
 
@@ -170,7 +190,22 @@ Game.prototype.checkShipIsValid = function (bowCoords, sternCoords) {
     }
   }
   return true;
-}
+};
+
+Game.prototype.myMove = function () {
+  console.log("my Move");
+  this.isMyMove = true;
+};
+
+Game.prototype.receiveReady = function () {
+  console.log("ready received");
+  this.opponentReady = true;
+  if (this.gameState === "ready") {
+    console.log("Game in play");
+    this.gameState = "in play";
+    this.draw();
+  }
+};
 
 // A move is made as follows:
 // 1)  Player 1 clicks on a position "pos"
@@ -207,8 +242,10 @@ Game.prototype.makeMove = function (pos) {
 
   } else {
 
+    var coords = this.posToCoords(pos);
+
     for (var i = 0; i < this.myMoves.length; i++) {
-      if (this.myMoves[i].row == pos.row && this.myMoves[i].col == pos.col) {
+      if (this.myMoves[i].row == coords.row && this.myMoves[i].col == coords.col) {
         return {
           error: "You have already fired at this location!"
         };
@@ -216,16 +253,17 @@ Game.prototype.makeMove = function (pos) {
     }
 
     //TODO Display move
-    this.myMoves.push(pos);
-    return pos;
+    this.myMoves.push(coords);
+    return coords;
 
   }
 
 };
 
-Game.prototype.receiveMove = function (pos) {
-  // The opponent has clicked on position pos
-  this.isMyMove = true;
+Game.prototype.receiveMove = function (coords) {
+  console.log("Move received:", coords)
+  // The opponent has clicked on coordsition coords
+  this.myMove();
 
   for (shipIdx in this.ships) {
     console.log(this.ships, shipIdx, this.ships[shipIdx]);
@@ -238,16 +276,16 @@ Game.prototype.receiveMove = function (pos) {
     var maxCol = Math.max(ship.bow.col, ship.stern.col);
 
     var shipHit = (
-      pos.row >= minRow && pos.row <= maxRow &&
-      pos.col >= minCol && pos.col <= maxCol
+      coords.row >= minRow && coords.row <= maxRow &&
+      coords.col >= minCol && coords.col <= maxCol
     );
 
     console.log(shipHit);
 
     if (shipHit) {
 
-      this.myBoard[pos.row][pos.col].state = "hit";
-      this.myBoard[pos.row][pos.col].draw(this.sideCtx, 40);
+      this.myBoard[coords.row][coords.col].state = "hit";
+      this.myBoard[coords.row][coords.col].draw(this.sideCtx, 40);
       this.hitCount += 1;
 
       if (this.hitCount === Game.SHIP_SQUARES_COUNT) {
@@ -255,7 +293,7 @@ Game.prototype.receiveMove = function (pos) {
         return "gameover"
       } else {
         ship.health -= 1;
-        if (ship.health < 0) {
+        if (ship.health == 0) {
           return "sink";
         } else {
           return "hit";
@@ -264,13 +302,15 @@ Game.prototype.receiveMove = function (pos) {
 
     }
   }
-  this.myBoard[pos.row][pos.col].state = "miss";
-  this.myBoard[pos.row][pos.col].draw(this.sideCtx, 40);
+  console.log("my board:", this.myBoard);
+  this.myBoard[coords.row][coords.col].state = "miss";
+  this.myBoard[coords.row][coords.col].draw(this.sideCtx, 40);
   return "miss";
 };
 
 
 Game.prototype.receiveMoveResult = function (moveResult) {
+  console.log("Move result received:", moveResult)
   // The opponent has responded to a player's click
   var pos = this.myMoves[this.myMoves.length - 1];
 
@@ -315,9 +355,11 @@ Square.prototype.color = function () {
 };
 
 Square.prototype.draw = function (ctx, size) {
-  ctx.fillStyle = this.color();
-  console.log("color", this.color())
-  ctx.fillRect(
+  ctx().fillStyle = this.color();
+  // console.log("color", this.color());
+  // console.log("ctx", ctx);
+//  console.log("topLeft", this.topLeft(size));
+  ctx().fillRect(
     this.topLeft(size).x + 1,
     this.topLeft(size).y + 1,
     size - 2,

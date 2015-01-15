@@ -44,6 +44,9 @@ Battleships.Routers.router = Backbone.Router.extend({
 
   userShow: function () {
     console.log("Current User:", Battleships.currentUser.get("username"));
+
+    $(".landing").toggleClass("active");
+
     var showUserView = new Battleships.Views.UserShow({
       model: Battleships.currentUser
     });

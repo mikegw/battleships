@@ -44,9 +44,9 @@ Battleships.Views.UserNav = Backbone.View.extend({
   },
 
   signUp: function (event) {
-    console.log("signing up");
     event.preventDefault();
-    debugger
+    console.log("signing up");
+
     var params = $(event.currentTarget).serializeJSON();
 
     $.ajax({

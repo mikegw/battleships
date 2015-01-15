@@ -39,21 +39,23 @@ Battleships.Views.GameShow = Backbone.View.extend({
 
     this.channel.bind("moveResult", function (moveResult) {
       Battleships.game.receiveMoveResult(moveResult);
+      this.notify(moveResult);
       if (moveResult == "gameover") {
         this.gameOver();
       }
-    });
+    }.bind(this));
     this.channel.bind("ready", function () {
       Battleships.game.receiveReady();
-    });
+    }.bind(this));
     this.channel.bind("to move", function (username) {
       console.log("I am", Battleships.currentUser.get("username"))
       console.log("to move:", username)
 
       if (Battleships.currentUser.get("username") === username) {
         Battleships.game.myMove();
+        this.notify("Your move");
       }
-    })
+    }.bind(this));
 
   },
 
@@ -66,6 +68,7 @@ Battleships.Views.GameShow = Backbone.View.extend({
       //TODO do I need data?
       success: function (response) {
         console.log("successful", response);
+        that.notify("Waiting for Opponent...");
         that.gameId = response;
         that.startPusher();
       },
@@ -84,6 +87,7 @@ Battleships.Views.GameShow = Backbone.View.extend({
       //TODO do I need data?
       success: function (response) {
         console.log("joined:", response);
+        that.notify("Joined game");
         that.gameId = response.id;
         if (Battleships.currentUser.get("username") === response.toMove) {
           Battleships.game.myMove();
@@ -99,6 +103,7 @@ Battleships.Views.GameShow = Backbone.View.extend({
 
   startGame: function () {
     console.log("starting");
+    this.notify("Starting Game...")
     this.mainCanvas = function () {
       return document.getElementById("main-canvas");
     };
@@ -106,6 +111,7 @@ Battleships.Views.GameShow = Backbone.View.extend({
       return document.getElementById("side-canvas");
     };
     Battleships.game = new Battleships.Game(this.mainCanvas, this.sideCanvas);
+    this.notify("Please add your ships!");
   },
 
   processMouseEvent: function (mouseEvent) {
@@ -124,6 +130,7 @@ Battleships.Views.GameShow = Backbone.View.extend({
   },
 
   endShip: function (event) {
+    var that = this;
     if (this.bow) {
       var stern = this.processMouseEvent(event);
       var addShipStatus = Battleships.game.addShip(this.bow, stern);
@@ -141,6 +148,10 @@ Battleships.Views.GameShow = Backbone.View.extend({
             socket_id: Battleships.pusher.connection.socket_id
           },
           success: function(response){
+            that.notify("Ship added");
+            if (Battleships.game.gameState === "add ships") {
+              that.notify("Please add another ship")
+            }
             console.log(response);
           },
           error: function(response) {
@@ -226,6 +237,10 @@ Battleships.Views.GameShow = Backbone.View.extend({
     setTimeout(function () {
       Backbone.history.navigate("", {trigger: true});
     }, 1000);
+  },
+
+  notify: function (message) {
+    $(".notification").text(message);
   }
 
 });

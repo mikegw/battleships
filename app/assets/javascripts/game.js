@@ -53,34 +53,33 @@ Game.prototype.setupEmptyBoard = function (board) {
 }
 
 Game.prototype.draw = function () {
-//  this.mainCtx.drawImage(Game.BKGD_IMG, 0, 0)
   if (this.gameState == "in play") {
     console.log("drawing in play");
-//    this.sideCtx.drawImage(Game.BKGD_IMG, 0, 0)
+
     for (var row in this.myBoard) {
       for (var sq in this.myBoard[row]) {
-        this.myBoard[row][sq].draw(this.sideCtx, 40);
+        this.myBoard[row][sq].draw(this.sideCtx, 30);
       }
     }
 
     for (var row in this.enemyBoard) {
       for (var sq in this.enemyBoard[row]) {
-        this.enemyBoard[row][sq].draw(this.mainCtx, 80);
+        this.enemyBoard[row][sq].draw(this.mainCtx, 60);
       }
     }
   } else {
     console.log("drawing");
     for (var row in this.myBoard) {
       for (var sq in this.myBoard[row]) {
-        this.myBoard[row][sq].draw(this.mainCtx, 80);
+        this.myBoard[row][sq].draw(this.mainCtx, 60);
       }
     }
   }
 };
 
 Game.prototype.posToCoords = function(pos) {
-  var row = Math.floor(pos.y / 80);
-  var col =  Math.floor(pos.x / 80);
+  var row = Math.floor(pos.y / 60);
+  var col =  Math.floor(pos.x / 60);
   return {row: row, col: col};
 }
 
@@ -88,11 +87,11 @@ Game.prototype.selectSq = function (pos) {
   var coords = this.posToCoords(pos);
   if (this.selected) {
     this.selected.isSelected = false;
-    this.selected.draw(this.mainCtx, 80);
+    this.selected.draw(this.mainCtx, 60);
   }
   this.selected = this.myBoard[coords.row][coords.col]
   this.selected.isSelected = true;
-  this.selected.draw(this.mainCtx, 80);
+  this.selected.draw(this.mainCtx, 60);
 }
 
 Game.prototype.addShip = function (bowPos, sternPos) {
@@ -100,7 +99,7 @@ Game.prototype.addShip = function (bowPos, sternPos) {
   var sternCoords = this.posToCoords(sternPos);
 
   this.selected.isSelected = false;
-  this.selected.draw(this.mainCtx, 80)
+  this.selected.draw(this.mainCtx, 60)
   this.selected = null;
 
   if(this.checkShipIsValid(bowCoords, sternCoords)){
@@ -147,10 +146,10 @@ Game.prototype.addShip = function (bowPos, sternPos) {
       var loop = function () {
         if (rowDif) {
           game.myBoard[bowCoords.row + i][bowCoords.col].state = "ship";
-          game.myBoard[bowCoords.row + i][bowCoords.col].draw(game.mainCtx, 80);
+          game.myBoard[bowCoords.row + i][bowCoords.col].draw(game.mainCtx, 60);
         } else {
           game.myBoard[bowCoords.row][bowCoords.col + i].state = "ship";
-          game.myBoard[bowCoords.row][bowCoords.col + i].draw(game.mainCtx, 80);
+          game.myBoard[bowCoords.row][bowCoords.col + i].draw(game.mainCtx, 60);
         }
 
         i += direction;
@@ -285,7 +284,7 @@ Game.prototype.receiveMove = function (coords) {
     if (shipHit) {
 
       this.myBoard[coords.row][coords.col].state = "hit";
-      this.myBoard[coords.row][coords.col].draw(this.sideCtx, 40);
+      this.myBoard[coords.row][coords.col].draw(this.sideCtx, 30);
       this.hitCount += 1;
 
       if (this.hitCount === Game.SHIP_SQUARES_COUNT) {
@@ -304,7 +303,7 @@ Game.prototype.receiveMove = function (coords) {
   }
   console.log("my board:", this.myBoard);
   this.myBoard[coords.row][coords.col].state = "miss";
-  this.myBoard[coords.row][coords.col].draw(this.sideCtx, 40);
+  this.myBoard[coords.row][coords.col].draw(this.sideCtx, 30);
   return "miss";
 };
 
@@ -320,7 +319,7 @@ Game.prototype.receiveMoveResult = function (moveResult) {
     this.enemyBoard[pos.row][pos.col].state = "hit";
   }
 
-  this.enemyBoard[pos.row][pos.col].draw(this.mainCtx, 80);
+  this.enemyBoard[pos.row][pos.col].draw(this.mainCtx, 60);
   this.isMyMove = false;
   return {message: Game.MESSAGES[moveResult]};
 };
@@ -338,31 +337,37 @@ var Square = function (pos){
 }
 
 Square.prototype.color = function () {
-  if (this.isSelected) {return "#aaa";}
+  if (this.isSelected) {return "rgba(200,200,200,0.5)";}
   switch (this.state) {
     case "empty":
-      return "#59f";
+      return "rgba(255,255,255,0.2)";
       break;
     case "ship":
-      return "#36c";
+      return "rgba(100,0,200, 0.5)";
       break;
     case "hit":
-      return "#f55";
+      return "rgba(255,0,0,0.5)";
       break;
     case "miss":
-      return "#55f";
+      return "rgba(0,255,0,0.5)";
   }
 };
 
 Square.prototype.draw = function (ctx, size) {
+  ctx().clearRect(
+    this.topLeft(size).x + 2,
+    this.topLeft(size).y + 2,
+    size - 4,
+    size - 4
+  );
   ctx().fillStyle = this.color();
   // console.log("color", this.color());
   // console.log("ctx", ctx);
 //  console.log("topLeft", this.topLeft(size));
   ctx().fillRect(
-    this.topLeft(size).x + 1,
-    this.topLeft(size).y + 1,
-    size - 2,
-    size - 2
+    this.topLeft(size).x + 2,
+    this.topLeft(size).y + 2,
+    size - 4,
+    size - 4
   );
 }

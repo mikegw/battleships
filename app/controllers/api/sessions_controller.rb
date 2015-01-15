@@ -10,7 +10,7 @@ class Api::SessionsController < ApplicationController
       sign_in(user)
       render json: user
     else
-      render json: ["Invalid Email/Password combo"]
+      render json: {errors: "Invalid Email/Password combo"}, status: :forbidden
     end
 
   end

@@ -18,6 +18,7 @@
 //= require turbolinks
 //= require underscore
 //= require backbone
+//= requre assets
 //= require battleships
 //= require eventBus
 //= require game

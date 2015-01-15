@@ -5,53 +5,31 @@
   h1 {
     width: 100%;
     font-size: 30px;
+    color: white;
     padding-top: 10px;
     padding-bottom: 10px;
     text-align:center;
-    background: #ccc;
-    border-bottom: 1px solid red;
+    background: rgba(20,0,150,0.7);
   }
-  .games-container {
 
-    .game-tabs {
-      border-bottom: 1px solid black;
-      cursor: pointer;
-
-      .tab {
-        float: left;
-        border: 1px solid green;
-
-        h2 {
-          padding: 10px;
-          background: blue;
-        }
-
-        &.active h2 {
-          background: green;
-        }
-
-      }
-
-    }
-
-    .games {
-      display: none;
-      li {
-        padding: 20px;
-        border-bottom: 1px solid black;
-      }
-    }
-
-    .active {
-      display: block;
-      background: pink;
-    }
-
+  canvas {
+    position: absolute;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
   }
+
+  .board-background {
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+  }
+
 }
 
 .left-panel {
-  width: 800px;
+  width: 600px;
   margin-right: 10px;
   .game-container {
     header, footer {
@@ -60,19 +38,89 @@
       padding-top: 8px;
       padding-bottom: 8px;
       text-align:center;
-      background: #eee;
-      border-bottom: 1px solid green;
+      background: rgba(255,255,255,0.5);
+      color: rgb(20,0,150);
     }
 
     .board-container {
-      width: 100%;
-      height: 800px;
+      width: 600px;
+      height: 600px;
+      position: relative;
     }
 
   }
+
+  h3 {
+    display: none;
+    font-size: 30px;
+    color: white;
+    padding-top: 10px;
+    margin: 200px;
+    padding-bottom: 10px;
+    text-align: center;
+    background: rgba(20,0,150,0.7);
+  }
+
+  .active {
+    display: block;
+  }
+
+  #start {
+    cursor: pointer;
+  }
+
 }
 
 .right-panel {
-  width: 400px;
+  width: 300px;
+  color: white;
+
+  .games-container {
+    background: rgba(20,0,150,0.7);
+    padding: 10px;
+
+    .game-tabs {
+      cursor: pointer;
+      margin: 5px;
+
+      .tab {
+        float: left;
+        width: 50%;
+
+        h2 {
+          padding: 10px;
+        }
+
+        &.active h2 {
+          background: rgba(100,100,255,0.5);
+        }
+
+      }
+
+    }
+
+    .games {
+      display: none;
+      height: 300px;
+      overflow-y: auto;
+      li {
+        padding: 15px;
+        background: rgba(100,100,255,0.5);
+        margin: 5px;
+      }
+    }
+
+    .active {
+      display: block;
+    }
+
+  }
+
+  .board-container {
+    margin-top: 10px;
+    width: 300px;
+    height: 300px;
+    position: relative;
+  }
 
 }

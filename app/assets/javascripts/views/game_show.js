@@ -27,33 +27,39 @@ Battleships.Views.GameShow = Backbone.View.extend({
 
   bindPusherEvents: function () {
     console.log("binding pusher to channel", this.channel)
-    this.channel.bind("opponent join", function () {
+    this.channel.bind("opponent join", function (opponent) {
       console.log("opponent joined");
+      this.changeHeader("You are playing against " + opponent);
       this.startGame();
     }.bind(this));
 
     this.channel.bind("move",(function (move) {
       var moveResult = Battleships.game.receiveMove(move);
       this.sendMoveResult(moveResult);
+      this.notify(Battleships.Game.MESSAGES["myMove"]);
     }).bind(this));
 
     this.channel.bind("moveResult", function (moveResult) {
-      Battleships.game.receiveMoveResult(moveResult);
-      this.notify(moveResult);
+      this.notify(Battleships.game.receiveMoveResult(moveResult).message);
       if (moveResult == "gameover") {
         this.gameOver();
       }
     }.bind(this));
+
     this.channel.bind("ready", function () {
-      Battleships.game.receiveReady();
+      console.log("Opponent ready")
+      this.notify(Battleships.game.receiveReady().message);
     }.bind(this));
+
     this.channel.bind("to move", function (username) {
+      //TODO COULD CAUSE PROBLEMS!!
       console.log("I am", Battleships.currentUser.get("username"))
       console.log("to move:", username)
 
       if (Battleships.currentUser.get("username") === username) {
         Battleships.game.myMove();
-        this.notify("Your move");
+      } else {
+        Battleships.game.opponentsMove();
       }
     }.bind(this));
 
@@ -78,20 +84,20 @@ Battleships.Views.GameShow = Backbone.View.extend({
     });
   },
 
-  joinGame: function (gameId) {
+  joinGame: function (joinData) {
     console.log("joining");
     var that = this;
     $.ajax({
-      url: "/api/games/" + gameId + "/join",
+      url: "/api/games/" + joinData.gameId + "/join",
       type: "get",
       //TODO do I need data?
       success: function (response) {
         console.log("joined:", response);
-        that.notify("Joined game");
+        that.notify("Joined " + joinData.opponent + "'s game");
+        that.notify(Battleships.Game.MESSAGES["start"]);
+        that.changeHeader("You are playing against " + joinData.opponent);
         that.gameId = response.id;
-        if (Battleships.currentUser.get("username") === response.toMove) {
-          Battleships.game.myMove();
-        }
+        console.log("Game Id:", that.gameId)
         that.startPusher();
       },
       error: function (response) {
@@ -111,7 +117,7 @@ Battleships.Views.GameShow = Backbone.View.extend({
       return document.getElementById("side-canvas");
     };
     Battleships.game = new Battleships.Game(this.mainCanvas, this.sideCanvas);
-    this.notify("Please add your ships!");
+    this.notify(Battleships.Game.MESSAGES["start"]);
   },
 
   processMouseEvent: function (mouseEvent) {
@@ -137,7 +143,9 @@ Battleships.Views.GameShow = Backbone.View.extend({
       console.log(addShipStatus);
       if (addShipStatus.error) {
         console.log(addShipStatus.error);
-      } else if (addShipStatus === "ready") {
+      } else if (Battleships.game.gameState === "ready"
+          || Battleships.game.gameState === "in play") {
+        //TODO COULD CAUSE PROBLEMS
         $.ajax({
           url: "/api/games/" + String(this.gameId),
           type: "PATCH",
@@ -148,10 +156,6 @@ Battleships.Views.GameShow = Backbone.View.extend({
             socket_id: Battleships.pusher.connection.socket_id
           },
           success: function(response){
-            that.notify("Ship added");
-            if (Battleships.game.gameState === "add ships") {
-              that.notify("Please add another ship")
-            }
             console.log(response);
           },
           error: function(response) {
@@ -159,7 +163,11 @@ Battleships.Views.GameShow = Backbone.View.extend({
           }
         })
       }
-
+      console.log(addShipStatus)
+      this.notify(addShipStatus.message);
+      if (Battleships.game.gameState === "in play") {
+        this.notify(Battleships.game.toMove().message);
+      }
       this.bow = null;
     }
   },
@@ -233,14 +241,18 @@ Battleships.Views.GameShow = Backbone.View.extend({
   },
 
   gameOver: function (event) {
-    console.log("Game Over");
+    this.notify(Battleships.game.gameOver().message);
     setTimeout(function () {
       Backbone.history.navigate("", {trigger: true});
     }, 1000);
   },
 
   notify: function (message) {
-    $(".notification").text(message);
+    $(".game-footer").text(message);
+  },
+
+  changeHeader: function (message) {
+    $(".game-header").text(message);
   }
 
 });

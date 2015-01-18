@@ -31,10 +31,17 @@ Game.SHIP_SQUARES_COUNT = Game.SHIP_TYPES.reduce(function(a, b) {
 });
 Game.BOARD_SIZE = 10;
 Game.MESSAGES = {
+  "start": "Deploy your fleet:" + Game.SHIP_TYPES.join(", "),
   "miss": "Missed!",
   "hit": "You HIT an enemy ship!",
   "sink": "Good shot! You SUNK an enemy ship!",
-  "invalidship": "You cannot place a ship there!"
+  "shipAdded": "Ship deployed!",
+  "invalidShip": "You cannot place a ship there!",
+  "ready": "Fleet deployed! Ready for battle...",
+  "opponentReady": "Enemy Ships Sighted!",
+  "inPlay": "Enemy Ships Sighted!",
+  "myMove": "Your move. Fire at will...",
+  "opponentsMove": "Incoming fire!! Batten down the hatches!"
 };
 // Game.SHIPS_IMG = new Image();
 // Game.SHIPS_IMG.src = "ships.png"
@@ -160,17 +167,19 @@ Game.prototype.addShip = function (bowPos, sternPos) {
         }
       }
       loop();
-      if (game.gameState === "ready" || game.gameState === "in play") {
-        return "ready";
+      if (game.gameState === "ready") {
+        return {message: Game.MESSAGES["ready"]};
+      } else if (game.gameState === "in play") {
+        return {message: Game.MESSAGES["inPlay"]};
       } else {
-        return "ok"; // TODO better name for this
+        return {message: Game.MESSAGES["shipAdded"]}; // TODO better name for this
       }
     } else {
-      return {error: Game.MESSAGES["invalidship"]};
+      return {error: Game.MESSAGES["invalidShip"]};
     }
 
   } else {
-    return {error: Game.MESSAGES["invalidship"]};
+    return {error: Game.MESSAGES["invalidShip"]};
   }
 };
 
@@ -194,6 +203,21 @@ Game.prototype.checkShipIsValid = function (bowCoords, sternCoords) {
 Game.prototype.myMove = function () {
   console.log("my Move");
   this.isMyMove = true;
+  return {message: Game.MESSAGES["myMove"]};
+};
+
+Game.prototype.opponentsMove = function () {
+  console.log("opponents Move");
+  this.isMyMove = true;
+  return {message: Game.MESSAGES["opponentsMove"]};
+};
+
+Game.prototype.toMove = function () {
+  if (this.isMyMove) {
+    return {message: Battleships.Game.MESSAGES["myMove"]};
+  } else {
+    return {message: Battleships.Game.MESSAGES["opponentsMove"]};
+  }
 };
 
 Game.prototype.receiveReady = function () {
@@ -203,6 +227,9 @@ Game.prototype.receiveReady = function () {
     console.log("Game in play");
     this.gameState = "in play";
     this.draw();
+    return this.toMove();
+  } else {
+    return {message: Game.MESSAGES["opponentReady"]};
   }
 };
 
@@ -322,6 +349,10 @@ Game.prototype.receiveMoveResult = function (moveResult) {
   this.enemyBoard[pos.row][pos.col].draw(this.mainCtx, 60);
   this.isMyMove = false;
   return {message: Game.MESSAGES[moveResult]};
+};
+
+Game.prototype.gameOver = function () {
+  return {message: Game.MESSAGES["gameOver"]};
 };
 
 var Square = function (pos){

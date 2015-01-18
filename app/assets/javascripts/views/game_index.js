@@ -17,7 +17,7 @@ Battleships.Views.GameIndex = Backbone.View.extend({
   template: JST["game/index"],
 
   render: function () {
-    content = this.template({
+    var content = this.template({
       openGames: this.openGames,
       fullGames: this.fullGames
     });
@@ -62,8 +62,8 @@ Battleships.Views.GameIndex = Backbone.View.extend({
   },
 
   switchTab: function (event) {
-    tabClicked = $(event.currentTarget);
-    $(".active").removeClass("active");
+    var tabClicked = $(event.currentTarget);
+    $(".game-tabs .active").removeClass("active");
     if (tabClicked.attr("id") == "open-tab") {
       $(".open").addClass("active");
     } else {
@@ -73,9 +73,18 @@ Battleships.Views.GameIndex = Backbone.View.extend({
   },
 
   join: function (event) {
-    gameId = $(event.currentTarget).data("id");
+    var target = $(event.currentTarget)
+    var gameId = target.data("id");
+    var text = target.text();
+    var opponent = text.slice(0, text.length - 7);
+    var joinData = {
+      gameId: gameId,
+      opponent: opponent
+    };
+
+    console.log(opponent);
     Backbone.history.navigate("play", {trigger: true});
-    Battleships.eventBus.trigger("join", gameId);
+    Battleships.eventBus.trigger("join", joinData);
   }
 
 });

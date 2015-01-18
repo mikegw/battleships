@@ -68,7 +68,7 @@ class Api::GamesController < ApplicationController
   def join
     @game = Game.find(params[:id])
     if @game.player2_id
-      flash[:errors] = @game.errors.fullmessages
+      flash[:errors] = @game.errors.full_messages
       render :index
     else
       puts current_user
@@ -88,9 +88,7 @@ class Api::GamesController < ApplicationController
 
         puts "deciding who goes first"
         to_move = rand(2) == 1 ? @game.player1 : @game.player2
-        Pusher.trigger(channel, "to move", to_move.username, {
-          socket_id: params[:socket_id]
-        })
+        Pusher.trigger(channel, "to move", to_move.username)
 
         render json: {id: @game.id, toMove: to_move.username}
       else

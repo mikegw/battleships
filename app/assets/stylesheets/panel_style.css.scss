@@ -91,7 +91,7 @@
           padding: 10px;
         }
 
-        &.active h2 {
+        &.active-tab h2 {
           background: rgba(100,100,255,0.5);
         }
 
@@ -110,7 +110,7 @@
       }
     }
 
-    .active {
+    .active-tab {
       display: block;
     }
 

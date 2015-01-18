@@ -63,11 +63,11 @@ Battleships.Views.GameIndex = Backbone.View.extend({
 
   switchTab: function (event) {
     var tabClicked = $(event.currentTarget);
-    $(".game-tabs .active").removeClass("active");
+    $(".active-tab").removeClass("active");
     if (tabClicked.attr("id") == "open-tab") {
-      $(".open").addClass("active");
+      $(".open").addClass("active-tab");
     } else {
-      $(".full").addClass("active");
+      $(".full").addClass("active-tab");
     }
 
   },

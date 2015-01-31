@@ -34,12 +34,14 @@ Battleships.Views.GameShow = Backbone.View.extend({
     }.bind(this));
 
     this.channel.bind("move",(function (move) {
+      console.log("move received at", new Date().getTime());
       var moveResult = Battleships.game.receiveMove(move);
       this.sendMoveResult(moveResult);
       this.notify(Battleships.Game.MESSAGES["myMove"]);
     }).bind(this));
 
     this.channel.bind("moveResult", function (moveResult) {
+      console.log("move result received at", new Date().getTime());
       this.notify(Battleships.game.receiveMoveResult(moveResult).message);
       if (moveResult == "gameover") {
         this.gameOver();
@@ -173,6 +175,7 @@ Battleships.Views.GameShow = Backbone.View.extend({
   },
 
   makeMove: function (rawPos) {
+    console.log("Move made at", new Date().getTime());
     var pos = this.processMouseEvent(event);
     var move = Battleships.game.makeMove(pos);
     if (move.error) {
@@ -187,6 +190,7 @@ Battleships.Views.GameShow = Backbone.View.extend({
           socket_id: Battleships.pusher.connection.socket_id
         },
         success: function(response){
+          console.log("Move success at", new Date().getTime())
           console.log(response);
         },
         error: function(response) {
@@ -197,7 +201,7 @@ Battleships.Views.GameShow = Backbone.View.extend({
   },
 
   sendMoveResult: function (moveResult) {
-    console.log("Sending Move Result:", moveResult)
+    console.log("Sending Move Result:", moveResult, "at", new Date().getTime());
     $.ajax({
       url: "/api/games/" + String(this.gameId),
       type: "PATCH",

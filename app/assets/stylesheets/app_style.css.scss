@@ -41,11 +41,11 @@ input:focus, textarea:focus {
 
 html {
   height: 100%;
-  background: image_url("sea.jpg");
+  background: image-url("sea.jpg");
   background-size: cover;
 
   &:after {
     display: none;
-    content: image_url("sea.jpg");
+    content: image-url("sea.jpg");
   }
 }

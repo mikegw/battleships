@@ -1,28 +1,17 @@
-== README
+== Battleships
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A two-player battleships game with
 
-Things you may want to cover:
+* Real time communication between browsers using Pusher
+* A Rails backend to take care of user information and relay moves etc between browsers
+* HTML5 Canvas UI for the game
+* BackboneJS Frontend
 
-* Ruby version
+The game is treated as a plugin with the aim of using the same framework for multiple games.
 
-* System dependencies
+The game is live [here](http://battleships.mikewilliamson.me)
 
-* Configuration
+### TODO
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+* Add ships images to canvas
+* Refactor to remove last references to battleships in Backbone gameShow view

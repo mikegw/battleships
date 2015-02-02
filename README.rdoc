@@ -11,7 +11,8 @@ The game is treated as a plugin with the aim of using the same framework for mul
 
 The game is live [here](http://battleships.mikewilliamson.me)
 
-### TODO
+TODO
+----
 
 * Add ships images to canvas
 * Refactor to remove last references to battleships in Backbone gameShow view

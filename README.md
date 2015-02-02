@@ -1,4 +1,5 @@
-== Battleships
+Battleships
+===========
 
 A two-player battleships game with
 
